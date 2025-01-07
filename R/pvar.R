@@ -328,19 +328,19 @@ pvargmm <-
     M <- M_lagged_endo + M_predetermined + M_exogenous
 
     #prepare matrix Lambda: Middle Matrix in  D=...
-    delta_W<- replicate(nof_categories, Matrix(0,nrow = nof_periods - lags - 1, ncol = length(transformed_dependent_vars)))
+    delta_W    <- replicate(nof_categories, Matrix(0,nrow = nof_periods - lags - 1, ncol = length(transformed_dependent_vars)))
     delta_W_NA <- replicate(nof_categories, Matrix(0,nrow = nof_periods - lags - 1, ncol = length(transformed_dependent_vars)))
 
-    delta_W_minus <- vector("list", nof_categories) # RF: TODO improve memory allocation
+    delta_W_minus    <- vector("list", nof_categories) # RF: TODO improve memory allocation
     delta_W_minus_NA <- vector("list", nof_categories) # RF: TODO improve memory allocation
 
     Q <- replicate(nof_categories, Matrix(0, nrow = M, ncol = nof_periods - 1 - lags))
 
-    Q_endo <- replicate(nof_categories, Matrix(0, nrow = M_lagged_endo, ncol = nof_periods - 1 - lags))
+    Q_endo          <- replicate(nof_categories, Matrix(0, nrow = M_lagged_endo, ncol = nof_periods - 1 - lags))
 
     Q_predetermined <- replicate(nof_categories, Matrix(0, nrow = M_predetermined, ncol = nof_periods - 1 - lags))
 
-    Q_exogenous <- replicate(nof_categories, Matrix(0, nrow = M_exogenous, ncol = nof_periods - 1 - lags))
+    Q_exogenous     <- replicate(nof_categories, Matrix(0, nrow = M_exogenous, ncol = nof_periods - 1 - lags))
 
     Q_new <- replicate(nof_categories, Matrix(0, nrow = M_lagged_endo + M_predetermined +
                                                         M_exogenous, ncol = nof_periods - 1 - lags))
@@ -389,7 +389,7 @@ pvargmm <-
       delta_W[[i]] <- Matrix(as.matrix(Set_Vars_i[-(1:(lags+1)), transformed_dependent_vars]))
 
       # Add parts for system instruments.
-      if(system_instruments == TRUE & transformation == "fod"){
+      if(system_instruments == TRUE && transformation == "fod"){
 
         delta_W[[i]] <- rbind(0, delta_W[[i]])
 
@@ -405,7 +405,7 @@ pvargmm <-
       delta_W_minus_dep <- delta_W_minus_dep_lag
 
       # stick exogenous and endogenous components of delta_W_minus together to one matrix
-      if(!missing(predet_vars) | !missing(exog_vars)){
+      if(!missing(predet_vars) || !missing(exog_vars)){
         delta_W_minus_exog <- as.matrix(Set_Vars_i[, c(transformed_predet_vars, transformed_exog_vars)])[-(1:(lags+1)),]
         delta_W_minus[[i]] <- Matrix(cbind(delta_W_minus_dep, delta_W_minus_exog))
       }else{delta_W_minus[[i]] <- Matrix(delta_W_minus_dep)}
@@ -414,7 +414,7 @@ pvargmm <-
       colnames(delta_W_minus[[i]]) <- c(transformed_lagged_vars, transformed_predet_vars, transformed_exog_vars)
 
       # Add parts for system instruments.
-      if(system_instruments == TRUE &  transformation == "fod"){
+      if(system_instruments == TRUE && transformation == "fod"){
 
         delta_W_minus[[i]] <- rbind(0, delta_W_minus[[i]])
 
@@ -431,7 +431,7 @@ pvargmm <-
       #######################################################################################
       # Start Set up W and W.minus.dep for FD System GMM
       #######################################################################################
-      if (system_instruments == TRUE){
+      if(system_instruments == TRUE){
 
         W <- as.matrix(Set_Vars_i[Set_Vars_i[,1]==categories[i], names(Set_Vars_i)%in% dependent_vars])
 
@@ -443,7 +443,7 @@ pvargmm <-
         if(!missing(predet_vars)) predet_and_exog_vars <- c(predet_and_exog_vars, predet_vars)
         if(!missing(exog_vars)) predet_and_exog_vars <- c(predet_and_exog_vars, exog_vars)
 
-        if(!missing(predet_vars) | !missing(exog_vars)) {
+        if(!missing(predet_vars) || !missing(exog_vars)) {
           W.minus.exog <-
             as.matrix(Set_Vars_i[Set_Vars_i[,1]==categories[i], names(Set_Vars_i) %in% predet_and_exog_vars])
         }
@@ -461,10 +461,10 @@ pvargmm <-
 
         W.minus.dep <- W.minus.dep.lag
 
-        if(!missing(predet_vars) | !missing(exog_vars)) W.minus.exog <- as.matrix(W.minus.exog[(lags+1):nrow(W.minus.exog),])
+        if(!missing(predet_vars) || !missing(exog_vars)) W.minus.exog <- as.matrix(W.minus.exog[(lags+1):nrow(W.minus.exog),])
 
         #stick exogenous and endogenous components of the lower part of W.minus together to one matrix
-        if(!missing(predet_vars) | !missing(exog_vars)){
+        if(!missing(predet_vars) || !missing(exog_vars)){
           W.minus <- cbind(W.minus.dep, W.minus.exog)
         }else{W.minus <- W.minus.dep}
 
@@ -566,7 +566,7 @@ pvargmm <-
       Q[[i]] <- Q_new[[i]]
       #######################################################
 
-      if(system_instruments == TRUE & transformation == "fod"){
+      if(system_instruments == TRUE && transformation == "fod"){
 
         Q[[i]] <- cbind(0, Q[[i]])
 
@@ -641,20 +641,18 @@ pvargmm <-
         if (system_constant == TRUE){
           P2c <- matrix(1, ncol=nof_periods - lags, nrow=1)
         }
-        
-        
 
-        if(!missing(predet_vars) & system_constant == TRUE){
+        if(!missing(predet_vars) && system_constant == TRUE){
           P2 <- rbind(P2a, P2b, P2c)
         }
 
-        if(!missing(predet_vars) & system_constant == FALSE){
+        if(!missing(predet_vars) && system_constant == FALSE){
           P2 <- rbind(P2a, P2b)
         }
 
-        if (missing(predet_vars) & system_constant == TRUE){P2 <- rbind(P2a, P2c)}
+        if (missing(predet_vars) && system_constant == TRUE){P2 <- rbind(P2a, P2c)}
 
-        if (missing(predet_vars) & system_constant == FALSE){P2 <- P2a}
+        if (missing(predet_vars) && system_constant == FALSE){P2 <- P2a}
 
         #######################################################################################
         # End System GMM instruments
@@ -703,7 +701,6 @@ pvargmm <-
 
       if (sum(rowSums(is.na(delta_W_minus[[i]])))) {
         delta_W_minus[[i]][as.logical(rowSums(is.na(delta_W_minus[[i]]))),] <- NA
-
       }
       delta_W_minus_NA[[i]] <- delta_W_minus[[i]]
       delta_W_minus[[i]][is.na(delta_W_minus[[i]])] <- 0
@@ -864,7 +861,7 @@ pvargmm <-
     rownames(Phi_first_step) <- transformed_dependent_vars
 
 
-    Delta_E_first_step <- mapply(function(i) delta_W[[i]] - delta_W_minus[[i]] %*% t(Phi_first_step), 1:nof_categories)
+    Delta_E_first_step    <- mapply(function(i) delta_W[[i]]    - delta_W_minus[[i]]    %*% t(Phi_first_step), 1:nof_categories)
     Delta_E_first_step_NA <- mapply(function(i) delta_W_NA[[i]] - delta_W_minus_NA[[i]] %*% t(Phi_first_step), 1:nof_categories)
     
     # vectorize residuals
@@ -885,7 +882,7 @@ pvargmm <-
 
     # Twostep estimation -----------------------------------------------------
 
-    if (steps == "twostep" | steps == "mstep") {
+    if (steps == "twostep" || steps == "mstep") {
 
 
       if (min(abs(eigen(sum_D_e)$values)) < tol){
@@ -902,7 +899,7 @@ pvargmm <-
 
       }
 
-      # Write the first part of the matrix computation for Phi in a seperate matrix in order
+      # Write the first part of the matrix computation for Phi in a separate matrix in order
       # to use it again and to save m*(m+k) matrix inversion
       inv.Phi1 <- MASS::ginv( as.matrix( t(sum_S_ZX_a %x% Diagonal(nof_dependent_vars)) %*% D_e.inv %*% (sum_S_ZX_a %x% Diagonal(nof_dependent_vars)) ))
 
@@ -927,7 +924,7 @@ pvargmm <-
     }
 
     # M-Step Estimation: -----------------------------------------------------
-    # Use repeat until coefficients converage:
+    # Use repeat until coefficients converge:
     if (steps == "mstep"){
 
       # Before iterations. Define initial mstep values:
@@ -1017,7 +1014,7 @@ pvargmm <-
     # Twostep
 
     # Windmeijer finite-sample correction for the twostep covariance matrix
-    if (steps == "twostep" | steps == "mstep") {
+    if (steps == "twostep" || steps == "mstep") {
       if (progressbar) {
         pb <-
           progress::progress_bar$new(
